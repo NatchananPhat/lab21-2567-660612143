@@ -51,7 +51,7 @@ export default function StudentPage() {
 
   const callEnrollApi = async () => {
     try {
-      await axios.post(
+      const resp = await axios.post(
         "/api/enrollments",
         {
           courseNo,
@@ -81,7 +81,7 @@ export default function StudentPage() {
   const callDropApi = async (drop_courseNo: string) => {
     setLoadingDropping(drop_courseNo);
     try {
-      await axios.delete("/api/enrollments", {
+      const resp = await axios.delete("/api/enrollments", {
         data: {
           courseNo: drop_courseNo,
         },
@@ -116,7 +116,7 @@ export default function StudentPage() {
         <Title order={4}>My Course(s)</Title>
 
         {myEnrollments &&
-          myEnrollments.map((enroll: any) => (
+          myEnrollments.map((enroll:any) => (
             <Group my="xs" key={enroll.courseNo}>
               <Text>
                 {enroll.courseNo} - {enroll.course.title}

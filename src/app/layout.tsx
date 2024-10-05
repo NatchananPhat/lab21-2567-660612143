@@ -34,11 +34,11 @@ export default function RootLayout({
     } else {
       //check if token is still valid
       try {
-        await axios.get("/api/user/checkAuthen", {
+        const resp = await axios.get("/api/user/checkAuthen", {
           headers: { Authorization: `Bearer ${token}` },
         });
         $authenStore.set({ token, authenUsername });
-      } catch (err: any) {
+      } catch (err:any) {
         console.log(err.message);
         isTokenValid = false;
       }
