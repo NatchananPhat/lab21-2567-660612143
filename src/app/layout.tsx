@@ -70,8 +70,8 @@ export default function RootLayout({
               </Title>
               {children}
               <Footer
-                studentId="660612142"
-                fullName="Chawin Katpark"
+                studentId="660612143"
+                fullName="Natchanan Phattarapraditkul"
                 year="2024"
               />
             </Container>
