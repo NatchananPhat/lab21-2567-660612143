@@ -82,44 +82,48 @@ export const POST = async (request: NextRequest) => {
 
   // Coding in lecture
   const prisma = getPrisma();
-  const course = await prisma.course.findUnique({
-    where: { courseNo },
+
+  const course = await prisma.course.findFirst({
+    where: { courseNo: courseNo },
   });
-  if (!course) {
+
+  if(!course){
     return NextResponse.json(
       {
         ok: false,
-        message: "Course number does not exists",
+        message: "Course number does not exist",
       },
-      { status: 400 }
+      { status: 404 }
     );
   }
 
-  const enrollment = await prisma.enrollment.findFirst({
-    where: { courseNo: course.courseNo, studentId },
-  });
-  if (enrollment) {
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "You already registered this course",
-      },
-      { status: 400 }
-    );
-  }
-
-  const newEnrollment = await prisma.enrollment.create({
-    data: {
-      courseNo: course.courseNo,
-      studentId,
+  const courseEnroll = await prisma.enrollment.findFirst({
+    where: {
+      courseNo: courseNo,
+      studentId: studentId,
     },
   });
-  if (newEnrollment) {
+
+  if (courseEnroll) {
+    return NextResponse.json(
+      { ok: false, 
+        message: "You already registered this course" 
+      },
+      { status: 400 }
+    );
+  }
+
+  await prisma.enrollment.create({
+    data: {
+      courseNo: courseNo,
+      studentId: studentId,
+    }
+  })
+
   return NextResponse.json({
     ok: true,
     message: "You has enrolled a course successfully",
   });
-  }
 };
 
 // Need review together with drop enrollment form.
@@ -161,24 +165,13 @@ export const DELETE = async (request: NextRequest) => {
 
   const prisma = getPrisma();
   // Perform data delete
-  const enrollment = await prisma.enrollment.findFirst({
-    where: { courseNo, studentId },
-  });
-  if (!enrollment) {
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "You are not enrolled in this course",
+  await prisma.enrollment.delete({
+    where: {
+    courseNo_studentId: {
+      courseNo: courseNo,
+      studentId: studentId,
       },
-      { status: 404 }
-    );
-  }
-  
-  await prisma.enrollment.findFirst({
-      where: {
-        courseNo: courseNo,
-        studentId: studentId,
-      },
+    }
   });
 
   return NextResponse.json({
